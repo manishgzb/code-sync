@@ -1,6 +1,6 @@
 function App() {
   return (
-    <div>CodeSync App</div>
+    <div className="bg-slate-600 text-white">CodeSync App</div>
   )
 }
 
