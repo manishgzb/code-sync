@@ -1,6 +1,7 @@
+import CodeEditor from "./components/CodeEditor"
 function App() {
   return (
-    <div className="bg-slate-600 text-white">CodeSync App</div>
+    <CodeEditor/>
   )
 }
 
