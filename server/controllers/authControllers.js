@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -14,9 +14,10 @@ const login = async (req, res) => {
         .json({ message: "Incorrect username or password" });
     }
   });
-  const token = await jwt.sign({user:email},process.env.JWT_SECRET_KEY,{expiresIn:'1h'})
-  return res.status(200).json({token})
-
+  const token = await jwt.sign({ user: email }, process.env.JWT_SECRET_KEY, {
+    expiresIn: "1h",
+  });
+  return res.status(200).json({ token });
 };
 const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -29,7 +30,6 @@ const signup = async (req, res) => {
     .hash(password, 10)
     .then((hash) => {
       hashPassword = hash;
-      console.log(hashPassword);
     })
     .catch((err) => {
       return res.status(500).json({ message: "Something went wrong" });
