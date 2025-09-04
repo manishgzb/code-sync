@@ -9,11 +9,11 @@ filesRouter.get("/", authMiddleware, filesController.getFiles);
 filesRouter.get("/:fileId", authMiddleware, filesController.getFile);
 
 // Post Route->api/files for creating new file
-filesRouter.post("/", authMiddleware, filesController.createFile);
+filesRouter.post("/", filesController.createFile);
 
 //Put Route->api/files/:fileId for updating a file
-filesRouter.put("/:fileId", authMiddleware, filesController.updateFile);
+filesRouter.put("/:fileId", filesController.updateFile);
 
 // Delete Route->api/files/:fileId for deleting a file
-filesRouter.delete("/:fileId", authMiddleware, filesController.deleteFile);
+filesRouter.delete("/:fileId", filesController.deleteFile);
 module.exports = filesRouter;

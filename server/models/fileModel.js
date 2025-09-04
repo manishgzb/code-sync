@@ -14,8 +14,7 @@ const fileSchema = new mongoose.Schema(
       default: "javascript",
     },
     room: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Room",
+      type: String,
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

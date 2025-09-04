@@ -13,6 +13,12 @@ const roomSchema = new mongoose.Schema({
       ref: "File",
     },
   ],
+  folders:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'Folder'
+    }
+  ],
   secretKey: String,
 });
 const Room = mongoose.model("Room", roomSchema);

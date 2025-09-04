@@ -21,7 +21,7 @@ const extensionMap = {
   },
   java: {
     language: "java",
-    icon: "https://img.icons8.com/?size=100&id=20982&format=png&color=000000",
+    icon: "https://img.icons8.com/?size=100&id=13679&format=png&color=000000",
   },
   c: {
     language: "c",
@@ -29,7 +29,7 @@ const extensionMap = {
   },
   py: {
     language: "python",
-    icon: "https://img.icons8.com/?size=100&id=20982&format=png&color=000000",
+    icon: "https://img.icons8.com/?size=100&id=13441&format=png&color=000000",
   },
 };
 export default extensionMap;

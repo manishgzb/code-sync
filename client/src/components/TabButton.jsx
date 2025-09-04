@@ -1,5 +1,5 @@
 import extensionMap from "../assets/extensionMap";
-const TabButton = ({ tabname, setFileName, setTabs }) => {
+const TabButton = ({ fileId,setActiveFileId, setTabs }) => {
   return (
     <div
       className="flex items-center justify-between gap-2 p-2 
@@ -8,24 +8,24 @@ const TabButton = ({ tabname, setFileName, setTabs }) => {
       <div
         className="flex items-center gap-2"
         onClick={() => {
-          setFileName(tabname);
+          setActiveFileId(fileId);
         }}
       >
         <div>
           <img
             className="w-5 h-5"
-            src={extensionMap[tabname.split(".")[1]].icon}
+            src="https://img.icons8.com/?size=100&id=20909&format=png&color=000000"
             alt=""
           />
         </div>
         <div className="text-md font-semibold">
-          <p>{tabname}</p>
+          <p>{fileId}</p>
         </div>
       </div>
       <div
         className="hover:cursor-default"
         onClick={() => {
-          setTabs((prevTabs) => prevTabs.filter((tab) => tab !== tabname));
+          setTabs((prevTabs) => prevTabs.filter((tab) => tab != fileId));
         }}
       >
         <img
