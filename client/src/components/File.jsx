@@ -1,6 +1,7 @@
 import { useState } from "react";
 import extensionMap from "../assets/extensionMap";
 import { deleteFile as deleteFileService, updateFile as updateFileService } from "../api/services/fileServices"
+import { socket } from "../socket";
 const File = ({ file, setActiveFileId, setTabs }) => {
     // state variables
     const [showMenu, setShowMenu] = useState(false)
@@ -28,8 +29,9 @@ const File = ({ file, setActiveFileId, setTabs }) => {
 
 
     // event handlers
-    const handleDeleteClick = () => {
-        deleteFile()
+    const handleDeleteClick = async() => {
+        await deleteFile()
+        socket.emit("file:delete")
     }
 
     const handleRenameClick = () => {

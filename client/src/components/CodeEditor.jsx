@@ -1,23 +1,36 @@
 import Editor from "@monaco-editor/react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import TabButton from "./TabButton";
 import extensionMap from "../assets/extensionMap";
 import { socket } from "../socket";
 import File from "./File";
 import { createFile, getFiles, getFile, updateFile } from "../api/services/fileServices"
+import { debounce } from "../utils";
+import { useSocket } from "../contexts/SocketContext";
 
-function CodeEditor({ updatedFile }) {
+function CodeEditor() {
   // State variables
+  const {updatedFile,isFileCreated,isFileDeleted} = useSocket()
   const [showInputBox, setShowInputBox] = useState(false)
   const [files, setFiles] = useState([])
   const [newFile, setNewFile] = useState('')
   const [openFiles, setOpenFiles] = useState([]);
   const [activeFileId, setActiveFileId] = useState("");
   const [activeFile, setActiveFile] = useState(null)
-  // helper functions
+
+  const debouncedSocketEmit = useMemo(() =>
+    debounce((value) => {
+      setFiles((prevFiles) => {
+        return prevFiles.map((file) => file._id === activeFileId ? { ...file, content: value } : file)
+      })
+      socket.emit("file:code-update", { ...activeFile, content: value })
+    }, 300)
+    , [activeFile, activeFileId])
+
   const createNewFile = async () => {
     try {
       const responseData = await createFile(newFile)
+      socket.emit("file:create")
     } catch (err) {
       window.alert(err)
     }
@@ -28,9 +41,7 @@ function CodeEditor({ updatedFile }) {
   // Editor events handlers
 
   const handleEditorChange = (value, event) => {
-    setFiles((prevFiles) => {
-      return prevFiles.map((file) => file._id === activeFileId ? { ...file, content: value } : file)
-    })
+    debouncedSocketEmit(value)
   }
 
   // Events handlers
@@ -50,11 +61,11 @@ function CodeEditor({ updatedFile }) {
   // effect to fetch all files for room
   useEffect(() => {
     const fetchFiles = async () => {
-      const files = await getFiles("room1")
+      const files = await getFiles('room1')
       setFiles(files)
     }
     fetchFiles()
-  }, [showInputBox,updatedFile])
+  }, [showInputBox, isFileCreated, isFileDeleted])
 
   // effect to handle ctrl+s event
   useEffect(() => {
@@ -79,17 +90,20 @@ function CodeEditor({ updatedFile }) {
     }
   }, [activeFile])
 
+
+
   useEffect(() => {
     if (!files || !activeFileId) return
     const file = files.find((file) => file._id === activeFileId)
     setActiveFile(file)
   }, [activeFileId, files])
-  
-  // useEffect(() => {
-  //   if (!updatedFile) return
-  //   files.map((file)=>file._id === updatedFile._id ? {...file,content:updatedFile.content}:file)
-  // }, [updatedFile])
 
+  useEffect(() => {
+    if (!updatedFile) return
+    setFiles((prevFiles) => {
+      return prevFiles.map((file) => file._id === updatedFile._id ? { ...file, content: updatedFile.content } : file)
+    })
+  }, [updatedFile])
 
   return (
     <div className="flex pt-1 h-screen">
@@ -135,7 +149,7 @@ function CodeEditor({ updatedFile }) {
               theme="vs-dark"
               path={activeFile?._id}
               defaultLanguage={activeFile ? extensionMap[activeFile.language].language : "javascript"}
-              defaultValue={activeFile?.content || ""}
+              value={activeFile?.content || ""}
               onChange={handleEditorChange}
             />
           </div>

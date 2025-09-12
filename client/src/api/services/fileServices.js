@@ -1,5 +1,5 @@
 import axiosInstance from "../axiosInstance";
-export const createFile = async (filename) => {
+export const createFile = async (filename,roomId) => {
   try {
     const response = await axiosInstance.post("/files", {
       name: filename,
