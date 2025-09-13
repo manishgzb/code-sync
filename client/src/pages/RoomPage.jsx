@@ -16,7 +16,7 @@ const RoomPage = () => {
 
     }
     const joinRoom = () => {
-        socket.auth = { roomId: roomId }
+        socket.auth = { roomId: 'room1' }
         socket.connect()
         navigate("/editor")
 
