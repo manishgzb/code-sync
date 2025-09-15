@@ -1,26 +1,13 @@
 import Editor from "@monaco-editor/react";
 import { useEffect, useState, useRef, useMemo } from "react";
 import TabButton from "./TabButton";
-import Sidebar from "./Sidebar";
 import extensionMap from "../assets/extensionMap";
 import { socket } from "../socket";
-import File from "./File";
-import { createFile, getFiles, getFile, updateFile } from "../api/services/fileServices"
 import { debounce } from "../utils";
-import { useSocket } from "../contexts/SocketContext";
-import { useRoomContext } from "../contexts/RoomContext";
 import { useAuthContext } from "../contexts/AuthContext";
 
-function CodeEditor({ onlineUsers }) {
+function CodeEditor({ activeFileId, activeFile, setFiles }) {
   // State variables
-  const { activeRoom } = useRoomContext()
-  const { updatedFile, isFileCreated, isFileDeleted } = useSocket()
-  const [showInputBox, setShowInputBox] = useState(false)
-  const [files, setFiles] = useState([])
-  const [newFile, setNewFile] = useState('')
-  const [openFiles, setOpenFiles] = useState([]);
-  const [activeFileId, setActiveFileId] = useState("");
-  const [activeFile, setActiveFile] = useState(null)
   const { user } = useAuthContext()
 
   const debouncedSocketEmit = useMemo(() =>
@@ -32,16 +19,7 @@ function CodeEditor({ onlineUsers }) {
     }, 300)
     , [activeFile, activeFileId])
 
-  const createNewFile = async () => {
-    try {
-      const responseData = await createFile(newFile, activeRoom)
-      socket.emit("file:create")
-    } catch (err) {
-      window.alert(err)
-    }
-    setShowInputBox(false)
-    setNewFile('')
-  }
+
 
   // Editor events handlers
 
@@ -50,116 +28,9 @@ function CodeEditor({ onlineUsers }) {
     debouncedSocketEmit(value)
   }
 
-  // Events handlers
-  const handleCreateFileEnter = async (e) => {
-    if (e.key === 'Enter') {
-      createNewFile()
-    }
-  }
-
-  // effect to sync activeFile when it changes
-  useEffect(() => {
-    const stillActive = openFiles.find((fileId) => fileId === activeFileId)
-    if (!stillActive) {
-      setActiveFileId(openFiles[0] || '')
-    }
-  }, [openFiles, activeFileId]);
-
-  // effect to fetch all files for room
-  useEffect(() => {
-    const fetchFiles = async () => {
-      const files = await getFiles(activeRoom)
-      setFiles(files)
-      console.log(files)
-    }
-    fetchFiles()
-  }, [isFileCreated, isFileDeleted])
-
-  // effect to handle ctrl+s event
-  useEffect(() => {
-    const saveFile = async () => {
-      if (!activeFile) return
-      try {
-        const res = await updateFile(activeFile._id, activeFile.name, activeFile.content, activeFile.language)
-        window.alert(res.message)
-      } catch (err) {
-        window.alert(err)
-      }
-    }
-    const handleKeyDown = (e) => {
-      if (e.ctrlKey && e.key === 's') {
-        e.preventDefault()
-        saveFile()
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [activeFile])
-
-
-
-  useEffect(() => {
-    if (!files || !activeFileId) return
-    const file = files.find((file) => file._id === activeFileId)
-    setActiveFile(file)
-  }, [activeFileId, files])
-
-  useEffect(() => {
-    if (!updatedFile) return
-    setFiles((prevFiles) => {
-      return prevFiles.map((file) => file._id === updatedFile._id ? { ...file, content: updatedFile.content } : file)
-    })
-  }, [updatedFile])
-
   return (
-    <div className="flex pt-1 h-screen">
-      <Sidebar files={files} setActiveFileId={setActiveFileId} newFile={newFile}
-        setNewFile={setNewFile}
-        setTabs={setOpenFiles}
-        handleCreateFileEnter={handleCreateFileEnter}
-        showInputBox={showInputBox}
-        setShowInputBox={setShowInputBox}
-      />
-
-      {/* <div className="sidebar w-1/7 border-1 border-gray-300">
-        <div className="flex h-10 border-b-1 border-gray-300 p-2 items-center justify-between">
-          <h1 className="text-slate-700 text-lg font-semibold">Explorer</h1>
-
-          <div onClick={() => setShowInputBox(true)}><img className="h-5 w-5 hover:cursor-pointer" src="https://img.icons8.com/?size=100&id=KTP9v004hvTf&format=png&color=000000" alt="" /></div>
-        </div>
-        <div>
-          {
-            showInputBox && <input type="text" placeholder="Type here" className="input text-md h-6 focus:outline-none"
-              value={newFile}
-              onKeyDown={handleCreateFileEnter}
-              onChange={(e) => setNewFile(e.target.value)}
-            />
-          }
-        </div>
-        <div className="files flex-col gap-2">
-          {
-            files && files.map((file) => {
-              return <File key={file._id} file={file} setActiveFileId={setActiveFileId} setTabs={setOpenFiles} />
-            })
-          }
-
-        </div>
-      </div> */}
-      <div className="editor-tab-container w-6/7">
-        <div className="tabs-container flex">
-          {openFiles.map((fileId, index) => (
-            <TabButton
-              key={Date.now() + index}
-              fileId={fileId}
-              setActiveFileId={setActiveFileId}
-              setTabs={setOpenFiles}
-            />
-          ))}
-        </div>
+      <div className="w-full">
         {activeFileId && (
-          <div className="editor-container">
             <Editor
               height="90vh"
               theme="vs-dark"
@@ -168,10 +39,8 @@ function CodeEditor({ onlineUsers }) {
               value={activeFile?.content || ""}
               onChange={handleEditorChange}
             />
-          </div>
         )}
       </div>
-    </div>
   );
 }
 export default CodeEditor;

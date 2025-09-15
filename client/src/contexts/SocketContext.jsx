@@ -7,7 +7,7 @@ const SocketContextProvider = ({ children }) => {
     const [updatedFile, setUpdatedFile] = useState(null)
     const [isFileCreated, setIsFileCreated] = useState(0)
     const [isFileDeleted, setIsFileDeleted] = useState(0)
-    const [onlineUsers,setOnlineUser] = useState([])
+    const [onlineUsers, setOnlineUser] = useState([])
     useEffect(() => {
         function onConnect() {
             console.log("socket connected")
@@ -27,12 +27,15 @@ const SocketContextProvider = ({ children }) => {
         function onFileDeleted() {
             setIsFileDeleted(prev => prev + 1)
         }
-        function onUserTyping(user){
+        function onUserTyping(user) {
             console.log(`${user.name} is typing`)
         }
-        function onRoomUsers(users){
-            setOnlineUser((prev)=>{
-                return [...prev,users]
+        function onRoomUsers(users) {
+            const uniqueUsers = Array.from(
+                new Map(users.map(user => [user.id, user])).values()
+            );
+            setOnlineUser((prev) => {
+                return [...uniqueUsers]
             })
         }
 
@@ -41,19 +44,19 @@ const SocketContextProvider = ({ children }) => {
         socket.on('file:code-updated', onFileUpdated)
         socket.on('file:deleted', onFileDeleted)
         socket.on("file:created", onFileCreated)
-        socket.on("user:typing",onUserTyping)
-        socket.on("room:users",onRoomUsers)
+        socket.on("user:typing", onUserTyping)
+        socket.on("room:users", onRoomUsers)
         return () => {
             socket.off('connect', onConnect)
             socket.off('disconnect', onDisconnect)
             socket.off('file:code-updated', onFileUpdated)
             socket.off("file:created", onFileCreated)
             socket.off("file:deleted", onFileDeleted)
-            socket.off("user:typing",onUserTyping)
-            socket.off("room:users",onRoomUsers)
+            socket.off("user:typing", onUserTyping)
+            socket.off("room:users", onRoomUsers)
 
         }
-    },[])
+    }, [])
     return (
         <SocketContext.Provider
             value={{

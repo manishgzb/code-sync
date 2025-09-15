@@ -61,7 +61,7 @@ io.on("connection", async (socket) => {
   socket.on("user:typing", () => {
     io.emit("user:typing", user);
   });
-  socket.on("disconnect", (socket) => {
+  socket.on("disconnect", () => {
     if (rooms[roomId]) {
       rooms[roomId] = rooms[roomId].filter((u) => u.socketId !== socket.id);
       io.to(roomId).emit(

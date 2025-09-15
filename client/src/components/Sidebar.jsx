@@ -1,8 +1,28 @@
 import { useState } from "react"
 import File from "./File"
-const Sidebar = ({ files, newFile, setNewFile,
-    handleCreateFileEnter,
-    showInputBox, setShowInputBox, setActiveFileId, setTabs }) => {
+import { createFile } from "../api/services/fileServices"
+import { socket } from "../socket"
+import { useRoomContext } from "../contexts/RoomContext"
+const Sidebar = ({ files, setActiveFileId, setTabs }) => {
+    const [showInputBox, setShowInputBox] = useState(false)
+    const [newFile, setNewFile] = useState('')
+    const { activeRoom } = useRoomContext()
+
+    const createNewFile = async () => {
+        try {
+            const responseData = await createFile(newFile, activeRoom)
+            socket.emit("file:create")
+        } catch (err) {
+            window.alert(err)
+        }
+        setShowInputBox(false)
+        setNewFile('')
+    }
+    const handleCreateFileEnter = async (e) => {
+        if (e.key === 'Enter') {
+            createNewFile()
+        }
+    }
     return (
         <div className="sidebar w-1/7 border-1 border-gray-300">
             <div className="flex h-10 border-b-1 border-gray-300 p-2 items-center justify-between">

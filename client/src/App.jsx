@@ -8,19 +8,19 @@ import { useAuthContext } from "./contexts/AuthContext.jsx"
 import { jwtDecode } from "jwt-decode"
 import { useNavigate } from "react-router-dom"
 function App() {
-  const { token, logout } = useAuthContext()
-  const navigate = useNavigate()
-  useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token)
-      const currTime = Date.now() / 1000
-      if(currTime<decoded.exp){
-        navigate("/room")
-      }else{
-        logout()
-      }
-    }
-  }, [])
+  // const { token, logout } = useAuthContext()
+  // const navigate = useNavigate()
+  // useEffect(() => {
+  //   if (token) {
+  //     const decoded = jwtDecode(token)
+  //     const currTime = Date.now() / 1000
+  //     if(currTime<decoded.exp){
+  //       navigate("/editor")
+  //     }else{
+  //       logout()
+  //     }
+  //   }
+  // }, [])
   return (
     <div>
       <Outlet />
