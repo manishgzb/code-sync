@@ -7,6 +7,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import EditorPage from "./pages/EditorPage.jsx";
 import RoomPage from "./pages/RoomPage.jsx";
 import SocketContextProvider from "./contexts/SocketContext.jsx";
+import RoomContextProvider from "./contexts/RoomContext.jsx";
+import PrivateRoute from "./components/PrivateRoute.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -15,15 +19,23 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <RoomPage />
+        element: <LoginPage/>
+      },
+      {
+        path:'signup',
+        element:<SignupPage/>
       },
       {
         path: 'room',
-        element: <RoomPage />
+        element: <PrivateRoute><RoomPage /></PrivateRoute>
       },
       {
         path: 'editor',
-        element: <EditorPage />
+        element: <PrivateRoute><EditorPage /></PrivateRoute>
+      },
+      {
+        path:'login',
+        element:<LoginPage></LoginPage>
       }
     ]
   }
@@ -32,9 +44,11 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
       <SocketContextProvider>
-      <RouterProvider router={router}>
-      </RouterProvider>
-    </SocketContextProvider>
+        <RoomContextProvider>
+          <RouterProvider router={router} >
+            </RouterProvider>
+        </RoomContextProvider>
+      </SocketContextProvider>
     </AuthContextProvider>
   </StrictMode>
 );

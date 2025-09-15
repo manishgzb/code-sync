@@ -7,6 +7,7 @@ const SocketContextProvider = ({ children }) => {
     const [updatedFile, setUpdatedFile] = useState(null)
     const [isFileCreated, setIsFileCreated] = useState(0)
     const [isFileDeleted, setIsFileDeleted] = useState(0)
+    const [onlineUsers,setOnlineUser] = useState([])
     useEffect(() => {
         function onConnect() {
             console.log("socket connected")
@@ -26,18 +27,31 @@ const SocketContextProvider = ({ children }) => {
         function onFileDeleted() {
             setIsFileDeleted(prev => prev + 1)
         }
+        function onUserTyping(user){
+            console.log(`${user.name} is typing`)
+        }
+        function onRoomUsers(users){
+            setOnlineUser((prev)=>{
+                return [...prev,users]
+            })
+        }
 
         socket.on('connect', onConnect)
         socket.on('disconnect', onDisconnect)
         socket.on('file:code-updated', onFileUpdated)
         socket.on('file:deleted', onFileDeleted)
         socket.on("file:created", onFileCreated)
+        socket.on("user:typing",onUserTyping)
+        socket.on("room:users",onRoomUsers)
         return () => {
             socket.off('connect', onConnect)
             socket.off('disconnect', onDisconnect)
             socket.off('file:code-updated', onFileUpdated)
             socket.off("file:created", onFileCreated)
             socket.off("file:deleted", onFileDeleted)
+            socket.off("user:typing",onUserTyping)
+            socket.off("room:users",onRoomUsers)
+
         }
     },[])
     return (
@@ -46,7 +60,8 @@ const SocketContextProvider = ({ children }) => {
                 isConnected,
                 updatedFile,
                 isFileDeleted,
-                isFileCreated
+                isFileCreated,
+                onlineUsers
             }}>
             {children}
         </SocketContext.Provider>

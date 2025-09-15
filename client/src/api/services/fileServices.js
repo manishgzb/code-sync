@@ -3,7 +3,7 @@ export const createFile = async (filename,roomId) => {
   try {
     const response = await axiosInstance.post("/files", {
       name: filename,
-      roomId: 'room1',
+      roomId: roomId,
       language: filename.split(".")[1]
     });
     return response.data;

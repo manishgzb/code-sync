@@ -17,7 +17,7 @@ const createRoom = async (req, res) => {
       name: roomName,
     });
     await room.save();
-    return res.status(200).json({ roomId: room._id });
+    return res.status(200).json({room:{id:room._id,name:room.name}});
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

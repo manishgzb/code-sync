@@ -1,22 +1,27 @@
 import Editor from "@monaco-editor/react";
 import { useEffect, useState, useRef, useMemo } from "react";
 import TabButton from "./TabButton";
+import Sidebar from "./Sidebar";
 import extensionMap from "../assets/extensionMap";
 import { socket } from "../socket";
 import File from "./File";
 import { createFile, getFiles, getFile, updateFile } from "../api/services/fileServices"
 import { debounce } from "../utils";
 import { useSocket } from "../contexts/SocketContext";
+import { useRoomContext } from "../contexts/RoomContext";
+import { useAuthContext } from "../contexts/AuthContext";
 
-function CodeEditor() {
+function CodeEditor({ onlineUsers }) {
   // State variables
-  const {updatedFile,isFileCreated,isFileDeleted} = useSocket()
+  const { activeRoom } = useRoomContext()
+  const { updatedFile, isFileCreated, isFileDeleted } = useSocket()
   const [showInputBox, setShowInputBox] = useState(false)
   const [files, setFiles] = useState([])
   const [newFile, setNewFile] = useState('')
   const [openFiles, setOpenFiles] = useState([]);
   const [activeFileId, setActiveFileId] = useState("");
   const [activeFile, setActiveFile] = useState(null)
+  const { user } = useAuthContext()
 
   const debouncedSocketEmit = useMemo(() =>
     debounce((value) => {
@@ -29,7 +34,7 @@ function CodeEditor() {
 
   const createNewFile = async () => {
     try {
-      const responseData = await createFile(newFile)
+      const responseData = await createFile(newFile, activeRoom)
       socket.emit("file:create")
     } catch (err) {
       window.alert(err)
@@ -41,6 +46,7 @@ function CodeEditor() {
   // Editor events handlers
 
   const handleEditorChange = (value, event) => {
+    socket.emit('user:typing', user)
     debouncedSocketEmit(value)
   }
 
@@ -50,6 +56,7 @@ function CodeEditor() {
       createNewFile()
     }
   }
+
   // effect to sync activeFile when it changes
   useEffect(() => {
     const stillActive = openFiles.find((fileId) => fileId === activeFileId)
@@ -61,11 +68,12 @@ function CodeEditor() {
   // effect to fetch all files for room
   useEffect(() => {
     const fetchFiles = async () => {
-      const files = await getFiles('room1')
+      const files = await getFiles(activeRoom)
       setFiles(files)
+      console.log(files)
     }
     fetchFiles()
-  }, [showInputBox, isFileCreated, isFileDeleted])
+  }, [isFileCreated, isFileDeleted])
 
   // effect to handle ctrl+s event
   useEffect(() => {
@@ -107,7 +115,15 @@ function CodeEditor() {
 
   return (
     <div className="flex pt-1 h-screen">
-      <div className="sidebar w-1/7 border-1 border-gray-300">
+      <Sidebar files={files} setActiveFileId={setActiveFileId} newFile={newFile}
+        setNewFile={setNewFile}
+        setTabs={setOpenFiles}
+        handleCreateFileEnter={handleCreateFileEnter}
+        showInputBox={showInputBox}
+        setShowInputBox={setShowInputBox}
+      />
+
+      {/* <div className="sidebar w-1/7 border-1 border-gray-300">
         <div className="flex h-10 border-b-1 border-gray-300 p-2 items-center justify-between">
           <h1 className="text-slate-700 text-lg font-semibold">Explorer</h1>
 
@@ -130,7 +146,7 @@ function CodeEditor() {
           }
 
         </div>
-      </div>
+      </div> */}
       <div className="editor-tab-container w-6/7">
         <div className="tabs-container flex">
           {openFiles.map((fileId, index) => (

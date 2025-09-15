@@ -5,19 +5,33 @@ import { socket } from "../socket"
 import { useNavigate } from "react-router-dom"
 import { useSocket } from "../contexts/SocketContext"
 import axiosInstance from "../api/axiosInstance"
+import { createRoom as createRoomService } from "../api/services/roomServices"
+import { useRoomContext } from "../contexts/RoomContext"
+import { useAuthContext } from "../contexts/AuthContext"
 
 const RoomPage = () => {
     const [showCreateForm, setShowCreateForm] = useState(false)
     const [showJoinForm, setShowJoinForm] = useState(false)
     const [roomId, setRoomId] = useState('')
+    const [roomName, setRoomName] = useState('')
+    const { activeRoom, setActiveRoom } = useRoomContext()
+    const { user } = useAuthContext()
     const navigate = useNavigate()
 
     const createRoom = async () => {
+        try {
+            const data = await createRoomService(roomName)
+            window.alert(`created room ${data.room.name} ${data.room.id}  `)
+        } catch (err) {
+            window.alert(err.message)
+        }
 
     }
     const joinRoom = () => {
-        socket.auth = { roomId: 'room1' }
+        socket.auth = { roomId: roomId, user: user }
         socket.connect()
+        localStorage.setItem('activeRoom', roomId)
+        setActiveRoom(roomId)
         navigate("/editor")
 
     }
@@ -27,6 +41,7 @@ const RoomPage = () => {
     }
     const handleJoinRoomSubmit = (e) => {
         e.preventDefault()
+        if (!roomId) return
         joinRoom()
     }
     if (showCreateForm) {

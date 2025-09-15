@@ -14,9 +14,13 @@ const login = async (req, res) => {
         .json({ message: "Incorrect username or password" });
     }
   });
-  const token = await jwt.sign({ user: email }, process.env.JWT_SECRET_KEY, {
-    expiresIn: "1h",
-  });
+  const token = await jwt.sign(
+    { user: { id: user._id, name: user.name } },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: "1h",
+    }
+  );
   return res.status(200).json({ token });
 };
 const signup = async (req, res) => {

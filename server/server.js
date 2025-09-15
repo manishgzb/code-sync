@@ -27,14 +27,21 @@ const io = new Server(server, {
 });
 app.use(express.json());
 app.use(express.json());
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/files", filesRouter);
 app.use("/api/rooms", roomsRouter);
+const rooms = {};
 io.on("connection", async (socket) => {
-  const { roomId } = socket.handshake.auth;
-  console.log(roomId);
+  const { roomId, user } = socket.handshake.auth;
   socket.join(roomId);
-  // console.log(socket.handshake.auth)
+  if (!rooms[roomId]) {
+    rooms[roomId] = [];
+  }
+  rooms[roomId].push({ socketId: socket.id, user });
+  io.to(roomId).emit(
+    "room:users",
+    rooms[roomId].map((u) => u.user)
+  );
   socket.on("file:code-update", async (file) => {
     // const event = new Event({
     //   eventName: "file:code-update",
@@ -50,6 +57,18 @@ io.on("connection", async (socket) => {
   });
   socket.on("file:delete", () => {
     io.emit("file:deleted");
+  });
+  socket.on("user:typing", () => {
+    io.emit("user:typing", user);
+  });
+  socket.on("disconnect", (socket) => {
+    if (rooms[roomId]) {
+      rooms[roomId] = rooms[roomId].filter((u) => u.socketId !== socket.id);
+      io.to(roomId).emit(
+        "room:users",
+        rooms[roomId].map((u) => u.user)
+      );
+    }
   });
   // if (!socket.recovered) {
   //   try {

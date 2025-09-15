@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 const AuthContext = createContext();
 const AuthContextProvider = ({ children }) => {
   const [token, setToken] = useState(() => {
@@ -15,7 +16,7 @@ const AuthContextProvider = ({ children }) => {
   });
   const login = (username, password) => {
     axiosInstance
-      .post("/login", {
+      .post("/auth/login", {
         email: username,
         password: password,
       })
