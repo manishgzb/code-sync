@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import CodeEditor from "../components/CodeEditor"
 import { useSocket } from "../contexts/SocketContext"
-import { socket } from "../socket"
 import { useRoomContext } from "../contexts/RoomContext"
 import { useAuthContext } from "../contexts/AuthContext"
 import { getFiles, updateFile } from "../api/services/fileServices"
@@ -10,14 +9,12 @@ import Tabbar from "../components/Tabbar"
 import PresenceList from "../components/PresenceList"
 const EditorPage = () => {
     const { activeRoom } = useRoomContext()
-    const { isConnected } = useSocket()
     const { user } = useAuthContext()
-    const { onlineUsers } = useSocket()
     const [files, setFiles] = useState([])
     const [activeFile, setActiveFile] = useState(null)
     const [activeFileId, setActiveFileId] = useState("");
     const [openFiles, setOpenFiles] = useState([]);
-    const { updatedFile, isFileCreated, isFileDeleted } = useSocket()
+    const {onlineUsers, updatedFile, isFileCreated, isFileDeleted } = useSocket()
 
     // useEffect(() => {
     //     console.log(isConnected)
@@ -34,7 +31,6 @@ const EditorPage = () => {
         const fetchFiles = async () => {
             const files = await getFiles(activeRoom)
             setFiles(files)
-            console.log(files)
         }
         fetchFiles()
     }, [isFileCreated, isFileDeleted])
@@ -68,6 +64,7 @@ const EditorPage = () => {
             document.removeEventListener('keydown', handleKeyDown)
         }
     }, [activeFile])
+    
     useEffect(() => {
         if (!files || !activeFileId) return
         const file = files.find((file) => file._id === activeFileId)
@@ -76,6 +73,7 @@ const EditorPage = () => {
 
     useEffect(() => {
         if (!updatedFile) return
+        console.log('updatedFile',updatedFile)
         setFiles((prevFiles) => {
             return prevFiles.map((file) => file._id === updatedFile._id ? { ...file, content: updatedFile.content } : file)
         })

@@ -17,7 +17,6 @@ const SocketContextProvider = ({ children }) => {
             setIsConnected(false)
         }
         function onFileUpdated(file) {
-            console.log(file.content)
             setUpdatedFile(file)
             // socket.auth.serverOffset = serverOffset;
         }

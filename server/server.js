@@ -49,14 +49,13 @@ io.on("connection", async (socket) => {
     //   data: { filename: file.name, _id: file._id, content: file.content },
     // });
     // await event.save();
-    console.log(file.content);
     io.to(roomId).emit("file:code-updated", file);
   });
   socket.on("file:create", () => {
-    io.emit("file:created");
+    io.to(roomId).emit("file:created");
   });
   socket.on("file:delete", () => {
-    io.emit("file:deleted");
+    io.to(roomId).emit("file:deleted");
   });
   socket.on("user:typing", () => {
     io.emit("user:typing", user);
