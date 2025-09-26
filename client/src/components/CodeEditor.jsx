@@ -1,47 +1,69 @@
-import CodeMirror, { Compartment } from '@uiw/react-codemirror'
-import { javascript } from '@codemirror/lang-javascript';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import extensionMap from '../assets/extensionMap';
 import { socket } from '../socket';
-import { debounce } from '../utils';
-function CodeEditor({ activeFileId, activeFile, setFiles }) {
+import { basicSetup } from 'codemirror'
+import { EditorState } from '@codemirror/state';
+import { EditorView } from 'codemirror';
+import * as Y from 'yjs'
+import { yCollab } from 'y-codemirror.next';
+import { Awareness } from 'y-protocols/awareness.js';
+import { SocketIoProvider } from '../SocketIoProvider';
+import { javascript } from '@codemirror/lang-javascript';
+import { Compartment } from '@codemirror/state';
+function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
   const viewRef = useRef(null)
+  const editorRef = useRef(null)
+  const ydoc = useMemo(() => new Y.Doc(), [])
+  const yfiles = useMemo(() => ydoc.getMap('yfiles'), [])
+  const awareness = useMemo(() => new Awareness(ydoc), [])
+  const provider = useMemo(() => new SocketIoProvider('room1', awareness, ydoc, socket), [])
   const langcompartment = useMemo(() => new Compartment(), [])
 
-  //
 
-  const emitFileUpdate = useCallback((val) => {
-    setFiles((prev) =>
-      prev.map((file) => file._id === activeFileId ? { ...file, content: val } : file)
-    )
-    socket.emit("file:code-update", { ...activeFile, content: val })
-  }, [activeFile, activeFileId])
+  useEffect(() => {
+    if (!editorRef.current || !activeFileId) return
+    if (!yfiles) return
+    if (!yfiles.has(activeFileId)) {
+      yfiles.set(activeFileId, new Y.Text(activeFile?.content || ""))
+    }
+    const ytext = yfiles.get(activeFileId)
+    const startState = EditorState.create({
+      doc: ytext.toString(),
+      extensions: [basicSetup, langcompartment.of(javascript()), yCollab(ytext, provider.awareness)]
+    })
+    viewRef.current = new EditorView({
+      state: startState,
+      parent: editorRef.current
+    })
+    return () => {
+      if (viewRef.current) {
+        viewRef.current.destroy(),
+          viewRef.current = null
+      }
+    }
+  }, [activeFileId, yfiles])
 
-  const debouncedEmitFileUpdate = useCallback(
-    debounce(emitFileUpdate, 300)
-    , [activeFile, activeFileId])
 
-
-  // handling editor value change
-  const onChange = useCallback((val, viewUpdate) => {
-    debouncedEmitFileUpdate(val)
-
-    //socket.emit("file:code-update", { ...activeFile, content: val })
-  }, [activeFileId, activeFile])
-
-  //side effect to change editor language when activeFile changes
+  // side effect to change editor language when activeFile changes
   useEffect(() => {
     if (!activeFile) return
     const ext = activeFile.name.split('.').pop()
     const lang = extensionMap[ext].language
     viewRef.current?.dispatch({ effects: langcompartment.reconfigure(lang) })
   }, [activeFile])
+
+  //
+  useEffect(() => {
+    if (!files) return
+    files.forEach((file) => {
+      if (!yfiles.has(file._id)) {
+        yfiles.set(file._id, new Y.Text(file.content))
+      }
+    })
+  }, [files])
   return (
 
-    <div>
-      {
-        activeFile && activeFileId && <CodeMirror value={activeFile.content} height='540px' extensions={[langcompartment.of(javascript())]} onChange={onChange} onCreateEditor={(view, state) => viewRef.current = view} lang='' />
-      }
+    <div ref={editorRef} className='w-full h-screen'>
     </div>
   );
 }

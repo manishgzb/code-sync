@@ -97,6 +97,7 @@ const EditorPage = () => {
                         setActiveFileId={setActiveFileId} />
                     <CodeEditor activeFileId={activeFileId}
                         activeFile={activeFile}
+                        files={files}
                         setFiles={setFiles} />
                 </div>
                 <div className="w-1/8">

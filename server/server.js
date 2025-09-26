@@ -51,6 +51,13 @@ io.on("connection", async (socket) => {
     // await event.save();
     io.to(roomId).emit("file:code-updated", file);
   });
+  socket.on('update',(roomId,update)=>{
+    console.log(update)
+    io.to(roomId).emit('update',update)
+  })
+  socket.on('awareness',(roomId,update)=>{
+    io.to(roomId).emit('awareness',update)
+  })
   socket.on("file:create", () => {
     io.to(roomId).emit("file:created");
   });
