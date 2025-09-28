@@ -42,24 +42,25 @@ io.on("connection", async (socket) => {
     "room:users",
     rooms[roomId].map((u) => u.user)
   );
-  socket.on("file:code-update", async (file) => {
-    // const event = new Event({
-    //   eventName: "file:code-update",
-    //   room: "room1",
-    //   data: { filename: file.name, _id: file._id, content: file.content },
-    // });
-    // await event.save();
-    io.to(roomId).emit("file:code-updated", file);
+  socket.on("sync-step-1", (roomId, stateVector) => {
+    socket.to(roomId).emit("sync-step-1", stateVector);
   });
-  socket.on('update',(roomId,update)=>{
-    console.log(update)
-    io.to(roomId).emit('update',update)
-  })
-  socket.on('awareness',(roomId,update)=>{
-    io.to(roomId).emit('awareness',update)
-  })
+
+  socket.on("sync-step-2", (roomId, update) => {
+    socket.to(roomId).emit("sync-step-2", update);
+  });
+
+  socket.on("update", (roomId, update) => {
+    socket.to(roomId).emit("update", update);
+  });
+  socket.on("awareness", (roomId, update) => {
+    socket.to(roomId).emit("awareness", update);
+  });
+  socket.on("request-awareness", () => {
+    socket.to(roomId).emit("request-awareness");
+  });
   socket.on("file:create", () => {
-    io.to(roomId).emit("file:created");
+    socket.to(roomId).emit("file:created");
   });
   socket.on("file:delete", () => {
     io.to(roomId).emit("file:deleted");

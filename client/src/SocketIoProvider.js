@@ -12,6 +12,7 @@ export class SocketIoProvider extends ObservableV2 {
     this.awareness = awareness;
     this.ydoc = ydoc;
     this.socket = socket;
+    this.synced = false;
 
     this.ydoc.on("update", (update, origin) => {
       if (origin !== this) {
@@ -19,8 +20,7 @@ export class SocketIoProvider extends ObservableV2 {
       }
     });
     this.socket.on("update", (update) => {
-      const u8 = new Uint8Array(update)
-      console.log("Received update length:", u8.length);
+      const u8 = new Uint8Array(update);
       Y.applyUpdate(this.ydoc, u8, this);
     });
     this.awareness.on("update", ({ added, updated, removed }) => {
@@ -28,10 +28,46 @@ export class SocketIoProvider extends ObservableV2 {
         this.awareness,
         added.concat(updated).concat(removed)
       );
-      this.socket.emit("awareness", this.roomName, update);
+      this.socket.emit("awareness", this.roomName, Array.from(update));
     });
     this.socket.on("awareness", (update) => {
-      applyAwarenessUpdate(this.awareness, update, this);
+      const u8 = new Uint8Array(update);
+      applyAwarenessUpdate(this.awareness, u8, this);
     });
+
+    this.socket.on("request-awareness", () => {
+      const update = encodeAwarenessUpdate(this.awareness, [
+        this.awareness.clientID,
+      ]);
+      this.socket.emit("awareness", this.roomName, Array.from(update));
+    });
+    this.socket.on("sync-step-1", (stateVector) => {
+      const diff = Y.encodeStateAsUpdate(
+        this.ydoc,
+        new Uint8Array(stateVector)
+      );
+      this.socket.emit("sync-step-2", this.roomName, Array.from(diff));
+    });
+    this.socket.on("sync-step-2", (update) => {
+      Y.applyUpdate(this.ydoc, new Uint8Array(update));
+      if (!this.synced) {
+        this.synced = true;
+        this.emit("synced", [true]);
+      }
+    });
+
+    this.socket.on("connect", () => {
+      const stateVector = Y.encodeStateAsUpdate(this.ydoc);
+      this.socket.emit("sync-step-1", this.roomName, Array.from(stateVector));
+      const awarenessUpdate = encodeAwarenessUpdate(this.awareness, [
+        this.awareness.clientID,
+      ]);
+      this.socket.emit("awareness");
+      this.socket.emit("request-awareness", roomName);
+    });
+    if (this.socket.connected) {
+      const stateVector = Y.encodeStateAsUpdate(this.ydoc);
+      this.socket.emit("sync-step-1", this.roomName, Array.from(stateVector));
+    }
   }
 }
