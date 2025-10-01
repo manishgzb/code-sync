@@ -60,7 +60,7 @@ io.on("connection", async (socket) => {
     socket.to(roomId).emit("request-awareness");
   });
   socket.on("file:create", () => {
-    socket.to(roomId).emit("file:created");
+    io.to(roomId).emit("file:created");
   });
   socket.on("file:delete", () => {
     io.to(roomId).emit("file:deleted");

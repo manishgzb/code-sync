@@ -14,6 +14,13 @@ export class SocketIoProvider extends ObservableV2 {
     this.socket = socket;
     this.synced = false;
 
+    const syncTimeOut = setTimeout(() => {
+      if (!this.synced) {
+        this.synced = true;
+        this.emit("synced", [true]);
+      }
+    },250);
+
     this.ydoc.on("update", (update, origin) => {
       if (origin !== this) {
         this.socket.emit("update", this.roomName, Array.from(update));
@@ -49,6 +56,7 @@ export class SocketIoProvider extends ObservableV2 {
       this.socket.emit("sync-step-2", this.roomName, Array.from(diff));
     });
     this.socket.on("sync-step-2", (update) => {
+      clearTimeout(syncTimeOut);
       Y.applyUpdate(this.ydoc, new Uint8Array(update));
       if (!this.synced) {
         this.synced = true;

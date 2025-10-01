@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import CodeEditor from "../components/CodeEditor"
 import { useSocket } from "../contexts/SocketContext"
 import { useRoomContext } from "../contexts/RoomContext"
@@ -11,10 +11,12 @@ const EditorPage = () => {
     const { activeRoom } = useRoomContext()
     const { user } = useAuthContext()
     const [files, setFiles] = useState([])
-    const [activeFile, setActiveFile] = useState(null)
     const [activeFileId, setActiveFileId] = useState("");
+    const activeFile = useMemo(() => {
+        return files.find((file) => file._id === activeFileId) || null;
+    }, [files, activeFileId])
     const [openFiles, setOpenFiles] = useState([]);
-    const {onlineUsers, updatedFile, isFileCreated, isFileDeleted } = useSocket()
+    const { onlineUsers, updatedFile, isFileCreated, isFileDeleted } = useSocket()
 
     // useEffect(() => {
     //     console.log(isConnected)
@@ -42,47 +44,15 @@ const EditorPage = () => {
         }
     }, [openFiles, activeFileId]);
 
-    // effect to handle ctrl+s event
-    useEffect(() => {
-        const saveFile = async () => {
-            if (!activeFile) return
-            try {
-                const res = await updateFile(activeFile._id, activeFile.name, activeFile.content, activeFile.language)
-                window.alert(res.message)
-            } catch (err) {
-                window.alert(err)
-            }
-        }
-        const handleKeyDown = (e) => {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault()
-                saveFile()
-            }
-        }
-        document.addEventListener('keydown', handleKeyDown)
-        return () => {
-            document.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [activeFile])
-    
-    useEffect(() => {
-        if (!files || !activeFileId) return
-        const file = files.find((file) => file._id === activeFileId)
-        setActiveFile(file)
-    }, [activeFileId, files])
 
     useEffect(() => {
         if (!updatedFile) return
-        console.log('updatedFile',updatedFile)
+        console.log('updatedFile', updatedFile)
         setFiles((prevFiles) => {
             return prevFiles.map((file) => file._id === updatedFile._id ? { ...file, content: updatedFile.content } : file)
         })
     }, [updatedFile])
 
-
-    useEffect(() => {
-        console.log(onlineUsers)
-    }, [onlineUsers])
     return (
         <div className="flex flex-row w-full h-screen">
             <Sidebar
@@ -93,6 +63,7 @@ const EditorPage = () => {
             <div className="flex w-6/7">
                 <div className="flex flex-col w-7/8">
                     <Tabbar openFiles={openFiles}
+                        files={files}
                         setOpenFiles={setOpenFiles}
                         setActiveFileId={setActiveFileId} />
                     <CodeEditor activeFileId={activeFileId}
