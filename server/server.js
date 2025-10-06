@@ -1,13 +1,14 @@
 const express = require("express");
 const { createServer } = require("node:http");
 const { Server } = require("socket.io");
+const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 require("./config/db.js");
-const { Event } = require("./models/eventModel.js");
 const authRouter = require("./routers/authRouter.js");
 const roomsRouter = require("./routers/roomsRouter.js");
 const filesRouter = require("./routers/filesRouter.js");
+const Room = require("./models/roomModel.js");
 const app = express();
 app.use(
   cors({
@@ -32,8 +33,18 @@ app.use("/api/files", filesRouter);
 app.use("/api/rooms", roomsRouter);
 const rooms = {};
 io.on("connection", async (socket) => {
-  const { roomId, user } = socket.handshake.auth;
+  const { roomId, password, user } = socket.handshake.auth;
+  // try {
+  //   const room = await Room.findById(roomId);
+  //   console.log(room);
+  //   if (!room || password !== room.password) {
+  //     return socket.emit("room:join-error", "Invalid roomId or Password");
+  //   }
+  // } catch (err) {
+  //   return socket.emit("room:join-error", err.message);
+  // }
   socket.join(roomId);
+  // socket.emit("room:join-success");
   if (!rooms[roomId]) {
     rooms[roomId] = [];
   }
@@ -59,11 +70,11 @@ io.on("connection", async (socket) => {
   socket.on("request-awareness", () => {
     socket.to(roomId).emit("request-awareness");
   });
-  socket.on("file:create", () => {
-    io.to(roomId).emit("file:created");
+  socket.on("file:create", (user, newFile) => {
+    io.to(roomId).emit("file:created", user, newFile);
   });
-  socket.on("file:delete", () => {
-    io.to(roomId).emit("file:deleted");
+  socket.on("file:delete", (user, file) => {
+    io.to(roomId).emit("file:deleted", user, file);
   });
   socket.on("user:typing", () => {
     io.emit("user:typing", user);
@@ -77,18 +88,5 @@ io.on("connection", async (socket) => {
       );
     }
   });
-  // if (!socket.recovered) {
-  //   try {
-  //     const events = await Event.find({
-  //       id: { $gt: socket.handshake.auth.serverOffset || 0 },
-  //     });
-  //     events.forEach((event) => {
-  //       console.log(event.eventName)
-  //       socket.to(roomId).emit("file:code-updated", event.data, event.id);
-  //     });
-  //   } catch (err) {
-  //     console.log(err.message);
-  //   }
-  // }
 });
 server.listen(3000, () => console.log("server runnning on port 3000"));

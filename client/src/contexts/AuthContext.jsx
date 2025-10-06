@@ -14,21 +14,49 @@ const AuthContextProvider = ({ children }) => {
     }
     return "";
   });
-  const login = (username, password) => {
-    axiosInstance
-      .post("/auth/login", {
+
+  const [isError, setIsError] = useState('')
+  const login = async (username, password) => {
+    try {
+      const res = await axiosInstance.post("/auth/login", {
         email: username,
-        password: password,
+        password: password
       })
-      .then((res) => {
-        localStorage.setItem("token", res.data.token);
-        setToken(res.data.token);
-        const decoded = jwtDecode(res.data.token);
-        setUser(decoded.user);
-      })
-      .catch((err) => {
-        console.log("Login failed");
-      });
+      localStorage.setItem("token", res.data.token);
+      setToken(res.data.token);
+      const decoded = jwtDecode(res.data.token);
+      setUser(decoded.user);
+      return res.status
+    } catch (err) {
+      if (err.response) {
+        setIsError(err.response.data.message)
+      } else if (err.request) {
+        setIsError('No response from server')
+      } else {
+        setIsError(err.message)
+      }
+    }
+
+    // axiosInstance
+    //   .post("/auth/login", {
+    //     email: username,
+    //     password: password,
+    //   })
+    //   .then((res) => {
+    //     localStorage.setItem("token", res.data.token);
+    //     setToken(res.data.token);
+    //     const decoded = jwtDecode(res.data.token);
+    //     setUser(decoded.user);
+    //   })
+    //   .catch((err) => {
+    //     if (err.response) {
+    //       setIsError(err.response.data.message)
+    //     } else if (err.request) {
+    //       setIsError('No response from server')
+    //     } else {
+    //       setIsError(err.message)
+    //     }
+    //   });
   };
   const logout = () => {
     localStorage.removeItem("token");
@@ -36,7 +64,7 @@ const AuthContextProvider = ({ children }) => {
     setUser("");
   };
   return (
-    <AuthContext.Provider value={{ user, login, logout, token }}>
+    <AuthContext.Provider value={{ user, login, logout, token, isError }}>
       {children}
     </AuthContext.Provider>
   );

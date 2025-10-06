@@ -3,23 +3,35 @@ import File from "./File"
 import { createFile } from "../api/services/fileServices"
 import { socket } from "../socket"
 import { useRoomContext } from "../contexts/RoomContext"
+import { toast } from "react-toastify"
+import {useAuthContext} from "../contexts/AuthContext"
+import extensionMap from "../assets/extensionMap"
 const Sidebar = ({ files, setActiveFileId, setTabs }) => {
+    const { user } = useAuthContext()
     const [showInputBox, setShowInputBox] = useState(false)
     const [newFile, setNewFile] = useState('')
     const { activeRoom } = useRoomContext()
-
+    const [globalMenuOpen,setGlobalMenuOpen] = useState(false)
     const createNewFile = async () => {
         try {
             const responseData = await createFile(newFile, activeRoom)
-            socket.emit("file:create")
+            socket.emit("file:create", user, newFile)
         } catch (err) {
-            window.alert(err)
+            toast(err.message,{
+                type:'error'
+            })
         }
         setShowInputBox(false)
         setNewFile('')
     }
     const handleCreateFileEnter = async (e) => {
         if (e.key === 'Enter') {
+            if(!extensionMap[newFile.split('.').pop()]){
+                toast('Extension or language not supported',{
+                    type:'error'
+                })
+                return
+            }
             createNewFile()
         }
     }
@@ -42,7 +54,7 @@ const Sidebar = ({ files, setActiveFileId, setTabs }) => {
             <div className="files flex-col gap-2">
                 {
                     files && files.map((file) => {
-                        return <File key={file._id} file={file} setActiveFileId={setActiveFileId} setTabs={setTabs} />
+                        return <File key={file._id} file={file} setActiveFileId={setActiveFileId} setTabs={setTabs} globalMenuOpen={globalMenuOpen} setGlobalMenuOpen={setGlobalMenuOpen} />
                     })
                 }
 

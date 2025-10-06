@@ -1,5 +1,4 @@
 import Avatar from "./Avatar"
-import Collapse from "./Collapse"
 
 const PresenceList = ({ users }) => {
     return (

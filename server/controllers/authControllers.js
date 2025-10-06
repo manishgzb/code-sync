@@ -5,15 +5,12 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
   if (!user) {
-    return res.status(401).json({ message: "User not registred" });
+    return res.status(401).json({ message: "Incorrect username or password" });
   }
-  await bcrypt.compare(password, user.password).then((result) => {
-    if (result != true) {
-      return res
-        .status(401)
-        .json({ message: "Incorrect username or password" });
-    }
-  });
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return res.status(401).json({ message: "Incorrect username or password" });
+  }
   const token = await jwt.sign(
     { user: { id: user._id, name: user.name } },
     process.env.JWT_SECRET_KEY,

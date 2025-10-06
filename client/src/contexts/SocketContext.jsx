@@ -1,13 +1,16 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { socket } from "../socket";
+import { toast } from "react-toastify";
+import { useAuthContext } from "./AuthContext";
 export const SocketContext = createContext()
 
 const SocketContextProvider = ({ children }) => {
     const [isConnected, setIsConnected] = useState(socket.connected)
     const [updatedFile, setUpdatedFile] = useState(null)
     const [isFileCreated, setIsFileCreated] = useState(0)
-    const [isFileDeleted, setIsFileDeleted] = useState(0)
+    const [deletedFile, setdeletedFile] = useState(null)
     const [onlineUsers, setOnlineUser] = useState([])
+    const { user } = useAuthContext()
     useEffect(() => {
         function onConnect() {
             console.log("socket connected")
@@ -20,11 +23,27 @@ const SocketContextProvider = ({ children }) => {
             setUpdatedFile(file)
             // socket.auth.serverOffset = serverOffset;
         }
-        function onFileCreated() {
+        function onFileCreated(usr, newFile) {
             setIsFileCreated(prev => prev + 1)
+            if (usr.id === user.id) {
+                return toast(`${newFile} created`, {
+                    type: 'success'
+                })
+            }
+            toast(`${usr.name} created ${newFile}`, {
+                type: 'info'
+            })
         }
-        function onFileDeleted() {
-            setIsFileDeleted(prev => prev + 1)
+        function onFileDeleted(usr, file) {
+            setdeletedFile(file)
+            if (usr.id === user.id) {
+                return toast(`File ${file.name} deleted`,{
+                    type:'success'
+                })
+            }
+            toast(`${usr.name} deleted file ${file.name}`,{
+                type:'info'
+            })
         }
         function onUserTyping(user) {
             console.log(`${user.name} is typing`)
@@ -61,7 +80,7 @@ const SocketContextProvider = ({ children }) => {
             value={{
                 isConnected,
                 updatedFile,
-                isFileDeleted,
+                deletedFile,
                 isFileCreated,
                 onlineUsers
             }}>

@@ -12,14 +12,15 @@ const getFiles = async (req, res) => {
 };
 const createRoom = async (req, res) => {
   try {
-    const { roomName } = req.body;
+    const { roomName, password } = req.body;
     const room = new Room({
       name: roomName,
+      password: password,
     });
     await room.save();
-    return res.status(200).json({room:{id:room._id,name:room.name}});
+    return res.status(200).json({ room: { id: room._id, name: room.name } });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
-module.exports = { getFiles,createRoom };
+module.exports = { getFiles, createRoom };

@@ -1,8 +1,13 @@
+import { useMemo } from "react";
 import extensionMap from "../assets/extensionMap";
-const TabButton = ({ fileId,setActiveFileId, setTabs }) => {
+const TabButton = ({ fileId, setActiveFileId, setTabs, files }) => {
+  const filename = useMemo(() => {
+    const f = files.find(f => f._id === fileId)
+    return f.name
+  },[])
   return (
     <div
-      className="flex items-center justify-between gap-2 p-2 
+      className="w-48 flex items-center shrink-0 justify-between gap-2 p-2 whitespace-nowrap
         border-r-1 border-t-1 border-b-1 border-gray-300 dark:bg-w hover:bg-gray-100 cursor-pointer"
     >
       <div
@@ -14,16 +19,16 @@ const TabButton = ({ fileId,setActiveFileId, setTabs }) => {
         <div>
           <img
             className="w-5 h-5"
-            src="https://img.icons8.com/?size=100&id=20909&format=png&color=000000"
+            src={extensionMap[filename.split('.').pop()].icon}
             alt=""
           />
         </div>
         <div className="text-md font-semibold">
-          <p>{fileId}</p>
+          <p>{filename}</p>
         </div>
       </div>
       <div
-        className="hover:cursor-default"
+        className="hover:cursor-pointer rounded-md hover:bg-gray-200"
         onClick={() => {
           setTabs((prevTabs) => prevTabs.filter((tab) => tab != fileId));
         }}

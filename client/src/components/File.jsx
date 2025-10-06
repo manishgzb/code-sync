@@ -2,20 +2,27 @@ import { useState } from "react";
 import extensionMap from "../assets/extensionMap";
 import { deleteFile as deleteFileService, updateFile as updateFileService } from "../api/services/fileServices"
 import { socket } from "../socket";
+import { useAuthContext } from "../contexts/AuthContext";
+import { toast } from "react-toastify";
 const File = ({ file, setActiveFileId, setTabs }) => {
     // state variables
     const [showMenu, setShowMenu] = useState(false)
     const [showMenuButton, setShowMenuButton] = useState(false)
-    const handleOpenMenuClick = () => {
+    const handleOpenMenuClick = (e) => {
+        e.stopPropagation()
         setShowMenu((prev) => !prev)
+
+
     }
+    const { user } = useAuthContext()
     // helper functions
     const deleteFile = async () => {
         try {
             const resData = await deleteFileService(file._id)
-            console.log(resData.message)
         } catch (err) {
-            console.log(err.message)
+            toast(err.message, {
+                type: 'error'
+            })
         }
     }
 
@@ -29,9 +36,10 @@ const File = ({ file, setActiveFileId, setTabs }) => {
 
 
     // event handlers
-    const handleDeleteClick = async() => {
+    const handleDeleteClick = async () => {
         await deleteFile()
-        socket.emit("file:delete")
+        setTabs((prevTabs) => prevTabs.filter((tab) => tab != file._id));
+        socket.emit("file:delete", user, file)
     }
 
     const handleRenameClick = () => {
@@ -78,7 +86,9 @@ const File = ({ file, setActiveFileId, setTabs }) => {
                     </div>
                 }
 
-                {showMenu && <div className="absolute left-32 top-4 z-50">
+                {showMenu && <div className="absolute left-32 top-4 z-50" onMouseLeave={() => {
+                    setShowMenu(false)
+                }}>
                     <ul className="menu menu-sm bg-base-200 rounded-box w-56 flex">
                         <li><button onClick={handleRenameClick} className="btn btn-xs mt-1">Rename</button></li>
                         <li><button onClick={handleDeleteClick} className="btn btn-xs mt-1">Delete</button></li>

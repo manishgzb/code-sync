@@ -13,7 +13,10 @@ import { Compartment } from '@codemirror/state';
 import { useAuthContext } from '../contexts/AuthContext';
 import { getRandomHexColor } from '../utils';
 import { updateFile } from '../api/services/fileServices';
+import { toast } from 'react-toastify';
+import { useRoomContext } from '../contexts/RoomContext';
 function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
+  const {activeRoom} = useRoomContext()
   const { user } = useAuthContext()
   const viewRef = useRef(null)
   const editorRef = useRef(null)
@@ -41,9 +44,13 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
       }
       const ytext = yfiles.get(activeFileId)
       ytextRef.current = ytext
+      const fixedHeightEditor = EditorView.theme({
+        "&": { height: "595px" },
+        ".cm-scroller": { overflow: "wrap" }
+      })
       const startState = EditorState.create({
         doc: ytext.toString(),
-        extensions: [basicSetup, langcompartment.of(javascript()), yCollab(ytext, provider.awareness)]
+        extensions: [basicSetup, langcompartment.of(javascript()), yCollab(ytext, provider.awareness),fixedHeightEditor]
       })
       viewRef.current = new EditorView({
         state: startState,
@@ -66,6 +73,7 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
           viewRef.current = null
       }
       provider.off('synced', setupEditor)
+       
     }
   }, [activeFileId, activeFile, yfiles, provider, langcompartment, awareness])
 
@@ -84,9 +92,13 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
       if (!activeFileId) return
       try {
         const res = await updateFile(activeFile._id, activeFile.name, ytextRef.current.toString(), activeFile.language)
-        window.alert(res.message)
+        toast(`File ${activeFile.name} saved! `,{
+          type:'success'
+        })
       } catch (err) {
-        window.alert(err)
+        toast(err.message,{
+          type:'error'
+        })
       }
     }
     const handleKeyDown = (e) => {
