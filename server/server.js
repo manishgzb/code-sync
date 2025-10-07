@@ -1,7 +1,6 @@
 const express = require("express");
 const { createServer } = require("node:http");
 const { Server } = require("socket.io");
-const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 require("./config/db.js");
@@ -11,7 +10,7 @@ const filesRouter = require("./routers/filesRouter.js");
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type"],
   })
@@ -22,7 +21,7 @@ const io = new Server(server, {
     maxDisconnectionDuration: 2 * 60 * 1000,
   },
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL,
   },
 });
 app.use(express.json());
@@ -78,4 +77,4 @@ io.on("connection", async (socket) => {
     }
   });
 });
-server.listen(3000, () => console.log("server runnning on port 3000"));
+server.listen(process.env.PORT, () => console.log("server runnning on port 3000"));
