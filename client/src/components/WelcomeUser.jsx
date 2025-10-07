@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 
-const WelcomeUser = ({ setShowJoinForm, setShowCreateForm }) => {
+const WelcomeUser = () => {
     return (
         <div className="flex-grow flex items-center justify-center m-10">
             <div className="w-full max-w-md p-8 space-y-8 bg-card-light dark:bg-card-dark rounded-xl shadow-lg">

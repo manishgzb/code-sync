@@ -8,7 +8,6 @@ require("./config/db.js");
 const authRouter = require("./routers/authRouter.js");
 const roomsRouter = require("./routers/roomsRouter.js");
 const filesRouter = require("./routers/filesRouter.js");
-const Room = require("./models/roomModel.js");
 const app = express();
 app.use(
   cors({
@@ -33,18 +32,8 @@ app.use("/api/files", filesRouter);
 app.use("/api/rooms", roomsRouter);
 const rooms = {};
 io.on("connection", async (socket) => {
-  const { roomId, password, user } = socket.handshake.auth;
-  // try {
-  //   const room = await Room.findById(roomId);
-  //   console.log(room);
-  //   if (!room || password !== room.password) {
-  //     return socket.emit("room:join-error", "Invalid roomId or Password");
-  //   }
-  // } catch (err) {
-  //   return socket.emit("room:join-error", err.message);
-  // }
+  const { roomId, user } = socket.handshake.auth;
   socket.join(roomId);
-  // socket.emit("room:join-success");
   if (!rooms[roomId]) {
     rooms[roomId] = [];
   }

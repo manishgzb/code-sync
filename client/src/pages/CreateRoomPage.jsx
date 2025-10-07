@@ -6,11 +6,10 @@ import { createRoom as createRoomService} from "../api/services/roomServices"
 
 const CreateRoomPage = () => {
     const [roomName, setRoomName] = useState('')
-    const [password, setPassword] = useState('')
 
     const createRoom = async () => {
         try {
-            const data = await createRoomService(roomName, password)
+            const data = await createRoomService(roomName)
             toast(`created room ${data.room.name} ${data.room.id}  `,{
                 type:'success'
             })
@@ -44,16 +43,7 @@ const CreateRoomPage = () => {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-subtext-light dark:text-subtext-dark" htmlFor="password">Password (optional)</label>
-                            <div className="mt-1 relative rounded-md shadow-sm">
-                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <span className="text-subtext-light dark:text-subtext-dark"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240-120q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" /></svg></span>
-                                </div>
-                                <input value={password} onChange={(e) => setPassword(e.target.value)} className="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-background-light dark:bg-background-dark pl-10 focus:border-primary focus:ring-primary sm:text-sm py-3" placeholder="Enter a password (optional)" type="password" />
-                            </div>
-                        </div>
-                        <div>
-                            <button className="group relative w-full flex justify-center items-center py-3 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-light dark:focus:ring-offset-card-dark transition-transform transform hover:scale-105" type="submit">
+                            <button className="group mt-5 relative w-full flex justify-center items-center py-3 px-4 border border-transparent text-lg font-medium rounded-md text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-card-light dark:focus:ring-offset-card-dark transition-transform transform hover:scale-105" type="submit">
                                 <span className="mr-3"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-280h80v-160h160v-80H520v-160h-80v160H280v80h160v160Zm40 200q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" /></svg></span>
                                 Create Room
                             </button>

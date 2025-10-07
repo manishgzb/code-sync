@@ -36,7 +36,7 @@ const Sidebar = ({ files, setActiveFileId, setTabs }) => {
         }
     }
     return (
-        <div className="sidebar w-1/7 border-1 border-gray-300">
+        <div className="sidebar lg:w-1/7 border-1 border-gray-300 w-48 bg-blue-50">
             <div className="flex h-10 border-b-1 border-gray-300 p-2 items-center justify-between">
                 <h1 className="text-slate-700 text-lg font-semibold">Explorer</h1>
 

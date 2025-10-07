@@ -3,7 +3,7 @@ import CodeEditor from "../components/CodeEditor"
 import { useSocket } from "../contexts/SocketContext"
 import { useRoomContext } from "../contexts/RoomContext"
 import { useAuthContext } from "../contexts/AuthContext"
-import { getFiles, updateFile } from "../api/services/fileServices"
+import { getFiles} from "../api/services/fileServices"
 import Sidebar from "../components/Sidebar"
 import Tabbar from "../components/Tabbar"
 import PresenceList from "../components/PresenceList"
@@ -18,10 +18,9 @@ const EditorPage = () => {
         return files.find((file) => file._id === activeFileId) || null;
     }, [files, activeFileId])
     const [openFiles, setOpenFiles] = useState([]);
-    const { onlineUsers, updatedFile, isFileCreated, deletedFile,isConnected } = useSocket()
+    const { onlineUsers, isFileCreated, deletedFile,isConnected } = useSocket()
 
     useEffect(() => {
-        console.log(isConnected)
         if (!isConnected) {
             socket.auth = { roomId: activeRoom, user: user }
             socket.connect()
@@ -72,7 +71,7 @@ const EditorPage = () => {
                         files={files}
                         setFiles={setFiles} />
                 </div>
-                <div className="w-1/8">
+                <div className="lg:w-1/8 w-20">
                     <PresenceList users={onlineUsers} />
                 </div>
             </div>

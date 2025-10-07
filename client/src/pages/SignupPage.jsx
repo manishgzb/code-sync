@@ -1,9 +1,7 @@
 import { useState } from "react"
-import axios from "axios"
 import { Link } from "react-router-dom"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../api/axiosInstance"
-import handleError from "../hooks/errorHandler"
 import Header from "../components/Header"
 import Footer from "../components/Footer"
 function SignupPage() {

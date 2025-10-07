@@ -4,12 +4,12 @@ import { useAuthContext } from '../contexts/AuthContext'
 import { Link, useNavigate } from 'react-router-dom'
 import Header from '../components/Header'
 import Footer from '../components/Footer'
-import { toast } from 'react-toastify'
+import { toast, ToastContainer } from 'react-toastify'
 
 function LoginPage() {
     const [email, setemail] = useState("")
     const [password, setpassword] = useState("")
-    const { user,login, isError } = useAuthContext()
+    const { login, isError } = useAuthContext()
     const navigate = useNavigate()
     const handleLoginClick = async () => {
         const status = await login(email, password)
@@ -17,11 +17,13 @@ function LoginPage() {
             toast("Login sucessfull",{
                 type:'success'
             })
-            navigate("/room")
+            setTimeout(()=>navigate("/room"),2000)
+            // navigate("/room")
         }
     }
     return (
         <>
+        <ToastContainer/>
             <Header />
             <div className='flex flex-col pl-6 pb-6 pr-6 pt-10 gap-5 items-center w-full'>
                 <h1 className='text-center text-xl'>Welcome back , Log In</h1>

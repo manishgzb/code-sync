@@ -10,7 +10,7 @@ const SocketContextProvider = ({ children }) => {
     const [isFileCreated, setIsFileCreated] = useState(0)
     const [deletedFile, setdeletedFile] = useState(null)
     const [onlineUsers, setOnlineUser] = useState([])
-    const { user } = useAuthContext()
+    const {user} = useAuthContext()
     useEffect(() => {
         function onConnect() {
             console.log("socket connected")
@@ -74,7 +74,7 @@ const SocketContextProvider = ({ children }) => {
             socket.off("room:users", onRoomUsers)
 
         }
-    }, [])
+    }, [user])
     return (
         <SocketContext.Provider
             value={{

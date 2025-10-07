@@ -19,7 +19,7 @@ export class SocketIoProvider extends ObservableV2 {
         this.synced = true;
         this.emit("synced", [true]);
       }
-    },250);
+    }, 250);
 
     this.ydoc.on("update", (update, origin) => {
       if (origin !== this) {

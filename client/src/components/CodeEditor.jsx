@@ -16,7 +16,7 @@ import { updateFile } from '../api/services/fileServices';
 import { toast } from 'react-toastify';
 import { useRoomContext } from '../contexts/RoomContext';
 function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
-  const {activeRoom} = useRoomContext()
+  const { activeRoom } = useRoomContext()
   const { user } = useAuthContext()
   const viewRef = useRef(null)
   const editorRef = useRef(null)
@@ -30,7 +30,8 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
     })
     return awareness
   }, [])
-  const provider = useMemo(() => new SocketIoProvider('room1', awareness, ydoc, socket), [])
+
+  const provider = useMemo(() => new SocketIoProvider(activeRoom, awareness, ydoc, socket), [])
   const langcompartment = useMemo(() => new Compartment(), [])
 
   const ytextRef = useRef(null)
@@ -50,7 +51,7 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
       })
       const startState = EditorState.create({
         doc: ytext.toString(),
-        extensions: [basicSetup, langcompartment.of(javascript()), yCollab(ytext, provider.awareness),fixedHeightEditor]
+        extensions: [basicSetup, langcompartment.of(javascript()), yCollab(ytext, provider.awareness), fixedHeightEditor]
       })
       viewRef.current = new EditorView({
         state: startState,
@@ -73,7 +74,7 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
           viewRef.current = null
       }
       provider.off('synced', setupEditor)
-       
+
     }
   }, [activeFileId, activeFile, yfiles, provider, langcompartment, awareness])
 
@@ -92,12 +93,12 @@ function CodeEditor({ activeFileId, activeFile, setFiles, files }) {
       if (!activeFileId) return
       try {
         const res = await updateFile(activeFile._id, activeFile.name, ytextRef.current.toString(), activeFile.language)
-        toast(`File ${activeFile.name} saved! `,{
-          type:'success'
+        toast(`File ${activeFile.name} saved! `, {
+          type: 'success'
         })
       } catch (err) {
-        toast(err.message,{
-          type:'error'
+        toast(err.message, {
+          type: 'error'
         })
       }
     }

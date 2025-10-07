@@ -10,7 +10,7 @@ const Header = () => {
         <div>
             <header className="border-b-2 border-dashed border-gray-300 px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
-                    <div className="flex items-center gap-4">
+                    <Link to={'/'} className="flex items-center gap-4">
                         <svg
                             className="h-8 w-8 text-primary"
                             fill="none"
@@ -26,7 +26,7 @@ const Header = () => {
                         <h2 className="text-2xl font-bold text-gray-900">
                             Code-Sync
                         </h2>
-                    </div>
+                    </Link>
 
                     <div className="flex items-center gap-2">
                         {
