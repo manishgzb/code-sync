@@ -1,17 +1,16 @@
 # 🚀 Code-Sync — A Collaborative Code Editor  
 
-**Code-Sync** is a real-time, conflict-free collaborative code editor that lets multiple developers code together seamlessly.  
-It provides a fast, reliable, and modern experience for live coding, learning, interviews, and remote teamwork — all in your browser.  
+**Code-Sync** is a real-time, conflict-free collaborative code editor that lets multiple developers code together seamlessly.
 
 ---
 
 ## 🌟 Features  
 
 ### ⚡ Real-Time Collaboration  
-- Live, **conflict-free editing** powered by sockets and synchronization logic.  
+- Live, **conflict-free editing** powered by sockets and Yjs(CRDT).  
 - All participants see changes instantly across connected clients.  
 
-### 💡 Powerful Code Editor  
+### 💡 Rich Code Editor  
 - **Syntax highlighting** for multiple programming languages.  
 - **Autocomplete** and **intelligent indentation**.  
 - Code formatting and line numbers for clean readability.  
@@ -42,5 +41,58 @@ It provides a fast, reliable, and modern experience for live coding, learning, i
 | Backend | Node.js, Express.js, Socket.IO |
 | Database | MongoDB |
 | Hosting | Vercel (frontend) / Render (backend) |
-| Others | Yjs(CRDT) WebSockets, REST APIs, dotenv |
+| Others | Yjs(CRDT) ,WebSockets, REST APIs |
+
+## 🚀 Getting Started  
+
+### 1️⃣ Clone the Repository  
+```bash
+git clone https://github.com/manishgzb/code-sync.git
+cd code-sync
+```
+
+### 2️⃣ Install Dependencies
+```bash
+cd client
+npm install
+cd ../server
+npm install
+```
+
+### 3️⃣ Setup Environment Variables
+#### Client
+Create .env file inside client directory and add:
+```
+VITE_API_URL = "http://localhost:3000"
+VITE_SOCKET_URL = "http://localhost:3000"
+```
+
+#### Server
+Create .env file inside server directory and add:
+```bash
+DB_URL = "<your-mogodb-uri>"
+PORT = 3000
+JWT_SECRET_KEY = "a cat"
+CLIENT_URL = "http://localhost:5173"
+```
+
+### 4️⃣Run the Application
+#### Run the backend
+```bash
+cd server
+node server.js
+```
+
+#### Run the frontend
+```bash
+cd client
+npm run dev
+```
+Then open:
+👉 http://localhost:5173 — Frontend
+👉 http://localhost:3000 — Backend
+
+
+
+
 
