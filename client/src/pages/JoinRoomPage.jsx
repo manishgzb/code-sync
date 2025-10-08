@@ -13,6 +13,7 @@ const JoinRoomPage = () => {
     const { user } = useAuthContext()
     const navigate = useNavigate()
     const handleSubmit = (e) => {
+        setLoading(false)
         e.preventDefault()
         if (!roomId) return
         joinRoom()

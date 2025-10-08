@@ -2,7 +2,7 @@ import TabButton from "./TabButton"
 const Tabbar = ({ openFiles, setOpenFiles, setActiveFileId, files }) => {
     return (
         <>
-            <div className="scrollbar-thin scrollbar-thumb-slate-300 tab-bar flex w-full overflow-x-auto overflow-y-hidden
+            <div class Name="tab-bar flex w-full overflow-x-auto 
             ">
                 {openFiles.map((fileId, index) => (
                     <TabButton

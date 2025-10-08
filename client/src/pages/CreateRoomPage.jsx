@@ -3,18 +3,23 @@ import Footer from "../components/Footer"
 import Header from "../components/Header"
 import { toast,ToastContainer } from "react-toastify"
 import { createRoom as createRoomService} from "../api/services/roomServices"
+import Loading from "../components/Loading"
 
 const CreateRoomPage = () => {
     const [roomName, setRoomName] = useState('')
+    const [loading,setLoading] = useState(false)
 
     const createRoom = async () => {
+        setLoading(true)
         try {
             const data = await createRoomService(roomName)
+            setLoading(false)
             toast(`created room ${data.room.name} ${data.room.id}  `,{
                 type:'success'
             })
         } catch (err) {
-            window.alert(err.message)
+            setLoading(false)
+            toast(err.message)
         }
 
     }
@@ -26,6 +31,9 @@ const CreateRoomPage = () => {
         <>
         <ToastContainer/>
             <Header />
+            {
+                loading && <Loading/>
+            }
             <div className="relative flex-grow flex items-center justify-center z-10 m-5" >
                 <div className="w-full max-w-md p-8 space-y-6 bg-card-light dark:bg-card-dark rounded-xl shadow-lg">
                     <div className="text-center">

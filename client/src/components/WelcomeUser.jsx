@@ -1,12 +1,14 @@
 import { Link } from "react-router-dom"
+import { useAuthContext } from "../contexts/AuthContext"
 
 const WelcomeUser = () => {
+    const {user} = useAuthContext()
     return (
         <div className="flex-grow flex items-center justify-center m-10">
             <div className="w-full max-w-md p-8 space-y-8 bg-card-light dark:bg-card-dark rounded-xl shadow-lg">
                 <div className="text-center">
                     <h2 className="text-3xl font-bold text-text-light dark:text-text-dark">
-                        Welcome, Manish
+                        Welcome, {user.name}
                     </h2>
                     <p className="mt-2 text-md text-subtext-light dark:text-subtext-dark">
                         Connect and collaborate with your team in real-time.
