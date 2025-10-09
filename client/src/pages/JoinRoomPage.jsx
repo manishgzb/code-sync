@@ -5,7 +5,6 @@ import { useRoomContext } from "../contexts/RoomContext"
 import { Link, useNavigate } from "react-router-dom"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
-import { toast, ToastContainer } from "react-toastify"
 
 const JoinRoomPage = () => {
     const [roomId, setRoomId] = useState('')
@@ -13,7 +12,6 @@ const JoinRoomPage = () => {
     const { user } = useAuthContext()
     const navigate = useNavigate()
     const handleSubmit = (e) => {
-        setLoading(false)
         e.preventDefault()
         if (!roomId) return
         joinRoom()
@@ -27,7 +25,6 @@ const JoinRoomPage = () => {
     }
     return (
         <>
-            <ToastContainer />
             <Header />
             <div className="relative flex-grow flex items-center justify-center z-10">
                 <div className="w-full max-w-md p-8 space-y-6 bg-card-light dark:bg-card-dark rounded-xl shadow-lg">

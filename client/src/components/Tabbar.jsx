@@ -1,8 +1,8 @@
 import TabButton from "./TabButton"
-const Tabbar = ({ openFiles, setOpenFiles, setActiveFileId, files }) => {
+const Tabbar = ({ openFiles, setOpenFiles,activeFileId, setActiveFileId, files }) => {
     return (
         <>
-            <div class Name="tab-bar flex w-full overflow-x-auto 
+            <div className="scrollbar-thin tab-bar flex flex-row w-fit overflow-x-auto overflow-y-hidden 
             ">
                 {openFiles.map((fileId, index) => (
                     <TabButton
@@ -11,6 +11,7 @@ const Tabbar = ({ openFiles, setOpenFiles, setActiveFileId, files }) => {
                         setActiveFileId={setActiveFileId}
                         setTabs={setOpenFiles}
                         files={files}
+                        activeFileId={activeFileId}
                     />
                 ))}
             </div>

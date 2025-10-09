@@ -44,7 +44,7 @@ const Sidebar = ({ files, setActiveFileId, setTabs }) => {
             </div>
             <div>
                 {
-                    showInputBox && <input type="text" placeholder="Type here" className="input text-md h-6 focus:outline-none"
+                    showInputBox && <input type="text" placeholder="file" className="input text-md h-6 focus:outline-none"
                         value={newFile}
                         onKeyDown={handleCreateFileEnter}
                         onChange={(e) => setNewFile(e.target.value)}

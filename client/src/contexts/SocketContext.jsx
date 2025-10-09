@@ -13,7 +13,6 @@ const SocketContextProvider = ({ children }) => {
     const {user} = useAuthContext()
     useEffect(() => {
         function onConnect() {
-            console.log("socket connected")
             setIsConnected(true)
         }
         function onDisconnect() {
@@ -45,9 +44,19 @@ const SocketContextProvider = ({ children }) => {
                 type:'info'
             })
         }
-        function onUserTyping(user) {
-            console.log(`${user.name} is typing`)
+
+        function onJoinRoom(user){
+            toast(`${user.name} joined the room`,{
+                type:'info'
+            })
         }
+
+        function onLeaveRoom(user){
+            toast(`${user.name} leaved the room`,{
+                type:'info'
+            })
+        }
+
         function onRoomUsers(users) {
             const uniqueUsers = Array.from(
                 new Map(users.map(user => [user.id, user])).values()
@@ -62,16 +71,20 @@ const SocketContextProvider = ({ children }) => {
         socket.on('file:code-updated', onFileUpdated)
         socket.on('file:deleted', onFileDeleted)
         socket.on("file:created", onFileCreated)
-        socket.on("user:typing", onUserTyping)
+       
         socket.on("room:users", onRoomUsers)
+        socket.on("join-room",onJoinRoom)
+        socket.on("leave-room",onLeaveRoom)
         return () => {
             socket.off('connect', onConnect)
             socket.off('disconnect', onDisconnect)
             socket.off('file:code-updated', onFileUpdated)
             socket.off("file:created", onFileCreated)
             socket.off("file:deleted", onFileDeleted)
-            socket.off("user:typing", onUserTyping)
+            
             socket.off("room:users", onRoomUsers)
+            socket.off("join-room",onJoinRoom)
+            socket.off("leave-room",onLeaveRoom)
 
         }
     }, [user])

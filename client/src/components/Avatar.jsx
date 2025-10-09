@@ -1,8 +1,8 @@
 const Avatar = ({ user }) => {
-    const user_intitials = user.name.split("")[0]
+    const user_intitials = user.name.split("")[0].toUpperCase()
     return (
         <>
-            <div className="flex flex-col justify-center items-center">
+            <div className="">
                 <div className="avatar avatar-online avatar-placeholder">
                     <div className="bg-neutral text-neutral-content w-10 rounded-full">
                         <span className="text-3xl">{user_intitials}</span>

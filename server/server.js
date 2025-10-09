@@ -26,12 +26,16 @@ const io = new Server(server, {
 });
 app.use(express.json());
 app.use(express.json());
+app.post("/api/ping", (req, res) => {
+  res.send('pong')
+});
 app.use("/api/auth", authRouter);
 app.use("/api/files", filesRouter);
 app.use("/api/rooms", roomsRouter);
 const rooms = {};
 io.on("connection", async (socket) => {
   const { roomId, user } = socket.handshake.auth;
+  socket.to(roomId).emit("join-room", user);
   socket.join(roomId);
   if (!rooms[roomId]) {
     rooms[roomId] = [];
@@ -64,8 +68,16 @@ io.on("connection", async (socket) => {
   socket.on("file:delete", (user, file) => {
     io.to(roomId).emit("file:deleted", user, file);
   });
-  socket.on("user:typing", () => {
-    io.emit("user:typing", user);
+  socket.on("leave-room", () => {
+    socket.leave(roomId);
+    if (rooms[roomId]) {
+      rooms[roomId] = rooms[roomId].filter((u) => u.socketId !== socket.id);
+      io.to(roomId).emit(
+        "room:users",
+        rooms[roomId].map((u) => u.user)
+      );
+    }
+    io.to(roomId).emit("leave-room", user);
   });
   socket.on("disconnect", () => {
     if (rooms[roomId]) {
@@ -77,4 +89,6 @@ io.on("connection", async (socket) => {
     }
   });
 });
-server.listen(process.env.PORT, () => console.log("server runnning on port 3000"));
+server.listen(process.env.PORT, () =>
+  console.log("server runnning on port 3000")
+);

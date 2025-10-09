@@ -29,7 +29,7 @@ const extensionMap = {
   },
   c: {
     language: cpp(),
-    icon: "https://img.icons8.com/?size=100&id=20982&format=png&color=000000",
+    icon: "https://img.icons8.com/?size=100&id=mfkStOwP4EC0&format=png&color=000000",
   },
   py: {
     language: python(),

@@ -1,14 +1,15 @@
 import { useMemo } from "react";
 import extensionMap from "../assets/extensionMap";
-const TabButton = ({ fileId, setActiveFileId, setTabs, files }) => {
+const TabButton = ({ fileId, activeFileId, setActiveFileId, setTabs, files }) => {
+
   const filename = useMemo(() => {
     const f = files.find(f => f._id === fileId)
     return f.name
-  },[])
+  }, [])
   return (
     <div
-      className="w-48 flex items-center shrink-0 justify-between gap-2 p-2 whitespace-nowrap
-        border-r-1 border-t-1 border-b-1 border-gray-300 dark:bg-w hover:bg-gray-100 cursor-pointer"
+      className={`w-fit flex items-center shrink-0 justify-between gap-2 p-2 whitespace-nowrap
+        border-r-1 border-t-1 border-b-1 border-gray-300 dark:bg-w hover:bg-gray-100 cursor-pointer ${activeFileId === fileId ? "border-b-3 border-b-blue-800" :""} `}
     >
       <div
         className="flex items-center gap-2"

@@ -4,6 +4,7 @@ import Header from "../components/Header"
 import { toast,ToastContainer } from "react-toastify"
 import { createRoom as createRoomService} from "../api/services/roomServices"
 import Loading from "../components/Loading"
+import { Link } from "react-router-dom"
 
 const CreateRoomPage = () => {
     const [roomName, setRoomName] = useState('')
@@ -58,12 +59,12 @@ const CreateRoomPage = () => {
                         </div>
                     </form>
                     <div className="text-center">
-                        <a className="font-medium text-primary hover:text-opacity-80" href="#">
+                        <Link to={'/room'} className="font-medium text-primary hover:text-opacity-80" href="#">
                             <span className="inline-flex items-center">
-                                <span className="mr-1">arrow_back</span>
+                                <span className="mr-1"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z" /></svg></span>
                                 Back to Welcome Screen
                             </span>
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div >
