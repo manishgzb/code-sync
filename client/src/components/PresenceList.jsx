@@ -23,7 +23,7 @@ const PresenceList = ({ users,leaveRoom }) => {
         getRoom()
     }, [activeRoom])
     return (
-        <div className="w-full h-full flex flex-col gap-2 p-1 border-1 border-gray-300 bg-blue-50">
+        <div className="w-full h-full flex flex-col gap-2 p-1 border-1 border-gray-300 bg-blue-50 justify-center items-center">
             <div className=" flex flex-col gap-3 border-b-1 border-gray-300">
                 <h1 className="text-slate-800 text-sm text-center">Room : {room.name}</h1>
                 <button className="btn btn-primary h-10 w-fit p-2 text-xs text-white" onClick={copyRoomId}><span><img className="w-fit h-fit" src="https://img.icons8.com/?size=30&id=86206&format=png&color=F2F7F5"></img></span>Copy RoomId</button>

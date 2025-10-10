@@ -4,4 +4,7 @@
   themes: light --default;
 }
 @plugin "@tailwindcss/typography";
+body, html {
+  cursor: default !important;
+}
 

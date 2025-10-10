@@ -25,34 +25,34 @@ const SocketContextProvider = ({ children }) => {
         function onFileCreated(usr, newFile) {
             setIsFileCreated(prev => prev + 1)
             if (usr.id === user.id) {
-                return toast(`${newFile} created`, {
+                return toast(`File ${newFile} created  successfully`, {
                     type: 'success'
                 })
             }
-            toast(`${usr.name} created ${newFile}`, {
+            toast(`${usr.name} created File ${newFile}`, {
                 type: 'info'
             })
         }
         function onFileDeleted(usr, file) {
             setdeletedFile(file)
             if (usr.id === user.id) {
-                return toast(`File ${file.name} deleted`,{
+                return toast(`File ${file.name} deleted successfully`,{
                     type:'success'
                 })
             }
-            toast(`${usr.name} deleted file ${file.name}`,{
+            toast(`${usr.name} deleted File ${file.name}`,{
                 type:'info'
             })
         }
 
         function onJoinRoom(user){
-            toast(`${user.name} joined the room`,{
+            toast(`${user.name} Joined the room`,{
                 type:'info'
             })
         }
 
         function onLeaveRoom(user){
-            toast(`${user.name} leaved the room`,{
+            toast(`${user.name} Leaved the room`,{
                 type:'info'
             })
         }
