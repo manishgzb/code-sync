@@ -31,7 +31,15 @@
 - Create, rename, delete, and open files within the workspace.  
 - Changes instantly reflect for all connected users in the same room.  
 
----
+---<img width="1920" height="1008" alt="Screenshot 2025-11-03 140937" src="https://github.com/user-attachments/assets/99ea93d8-323e-4ebe-8f68-25c4ced8dcf8" />
+
+<img width="1920" height="1008" alt="Screenshot 2025-11-03 141026" src="https://github.com/user-attachments/assets/0cbd667a-795c-4b29-975a-a1c6c5796ce8" />
+
+<img width="1920" height="1080" alt="Screenshot 2025-11-03 141037" src="https://github.com/user-attachments/assets/e6a18fbc-131c-451d-9865-f784e7f37685" />
+<img width="1920" height="1008" alt="Screenshot 2025-11-03 141116" src="https://github.com/user-attachments/assets/f59963d5-3344-4c15-98f6-7128035573e0" />
+<img width="1920" height="1008" alt="Screenshot 2025-11-03 142949" src="https://github.com/user-attachments/assets/606be98d-3c09-47db-ae5b-96fb06137a87" />
+
+![WhatsApp Image 2025-11-03 at 14 34 30_aebc79bb](https://github.com/user-attachments/assets/bff1c387-a379-4ca3-bf35-f4e768369227)
 
 ## 🛠️ Tech Stack  
 
@@ -91,6 +99,7 @@ npm run dev
 Then open:
 👉 http://localhost:5173 — Frontend
 👉 http://localhost:3000 — Backend
+
 
 
 
